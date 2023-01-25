@@ -116,7 +116,18 @@ def make_report(logs, rep_name, config, threshold=50):
         logging.info('Done')
 
 
-def merge_config(internal_config, external_config):
+def merge_config(external_config, internal_config=config):
+    def get_external_config(path):
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        logging.info(f"The config file '{path}' not found")
+        sys.exit()
+    except json.decoder.JSONDecodeError:
+        logging.info(f"Cannot parse the config file '{path}'")
+        sys.exit()
+        
     res = internal_config.copy()
     if external_config is not None:
         res.update(external_config)
@@ -125,25 +136,10 @@ def merge_config(internal_config, external_config):
 
 def main():
     parser = argparse.ArgumentParser(description='Generate report')
-    parser.add_argument('--config', dest='config', type=str, nargs='?', default='./config.json', required=False)
+    parser.add_argument('--config', dest='config', type=str, nargs='?', required=False)
     args = parser.parse_args()
-    full_config = None
 
-    # if only --config option without any parameters
-    if args.config == './config.json' and not os.path.isfile(args.config):
-        with open(args.config, 'w', encoding='utf-8') as f:
-            json.dump(config, f, indent=4, sort_keys=True)
-    try:
-        with open(args.config, 'r', encoding='utf-8') as f:
-            full_config = json.load(f)
-    except FileNotFoundError:
-        logging.info(f"The config file '{args.config}' not found")
-        sys.exit()
-    except json.decoder.JSONDecodeError:
-        logging.info(f"Cannot parse the config file '{args.config}'")
-        sys.exit()
-
-    full_config = merge_config(config, full_config)
+    full_config = merge_config(args.config)
 
     # from now, we have config, so let's update logging
     logging.basicConfig(format='[%(asctime)s] %(levelname).1s %(message)s',
