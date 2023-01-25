@@ -114,6 +114,7 @@ def make_report(logs, rep_name, config, threshold=50):
         f.write(page)
         logging.info('Done')
 
+
 def get_external_config(path):
     if path is None:
         return
