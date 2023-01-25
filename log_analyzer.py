@@ -32,10 +32,9 @@ logging.basicConfig(format='[%(asctime)s] %(levelname).1s %(message)s',
 
 def find_latest_log(path, pattern=pattern_for_log_filename):
     # if we have plane and .gz we would prefer plane
+    lst = ['path', 'date', 'extension']
+    Result = namedtuple('Result', lst)
     for file in sorted(os.listdir(path), key=lambda item: item + '_', reverse=True):
-        lst = ['path', 'date', 'extension']
-        Result = namedtuple('Result', lst)
-
         z = re.match(pattern, file)
         if z:
             date, extension = f"{z.group('year')}.{z.group('month')}.{z.group('day')}", z.group('extension')
@@ -115,20 +114,23 @@ def make_report(logs, rep_name, config, threshold=50):
         f.write(page)
         logging.info('Done')
 
+def get_external_config(path):
+    if path is None:
+        return
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        logging.info(f"The config file '{path}' not found")
+        sys.exit()
+    except json.decoder.JSONDecodeError:
+        logging.info(f"Cannot parse the config file '{path}'")
+        sys.exit()
+
 
 def merge_config(external_config, internal_config=config):
-    def get_external_config(path):
-        try:
-            with open(path, 'r', encoding='utf-8') as f:
-                return json.load(f)
-        except FileNotFoundError:
-            logging.info(f"The config file '{path}' not found")
-            sys.exit()
-        except json.decoder.JSONDecodeError:
-            logging.info(f"Cannot parse the config file '{path}'")
-            sys.exit()
-
     res = internal_config.copy()
+
     if external_config is not None:
         res.update(external_config)
     return res
@@ -139,7 +141,7 @@ def main():
     parser.add_argument('--config', dest='config', type=str, nargs='?', required=False)
     args = parser.parse_args()
 
-    full_config = merge_config(args.config)
+    full_config = merge_config(get_external_config(args.config))
 
     # from now, we have config, so let's update logging
     logging.basicConfig(format='[%(asctime)s] %(levelname).1s %(message)s',
@@ -152,7 +154,7 @@ def main():
 
     if not data.path:
         logging.info('No logs to parse.')
-        sys.exit()
+        return
 
     rep_full_path = os.path.join(full_config['REPORT_DIR'], f'report-{data.date}.html')
     if not os.path.exists(rep_full_path):
