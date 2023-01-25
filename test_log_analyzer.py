@@ -5,6 +5,7 @@ import shutil
 from log_analyzer import *
 import os
 
+
 class MyTestCase_01(unittest.TestCase):
     def setUp(self):
         self.config_01 = {'a': 1, 'b': 3}
@@ -59,6 +60,7 @@ class MyTestCase_02(unittest.TestCase):
                                 '2017.07.30',
                                 '.gz'),
                          find_latest_log(self.tempdir, pattern_for_log_filename))
+
 
 if __name__ == '__main__':
     unittest.main()
