@@ -23,7 +23,7 @@ config = {
     "DEBUG": False,
     "LOG_FILE": None
 }
-pattern_for_log_filename = 'nginx-access-ui.log-(?P<year>\d{4})(?P<month>\d{2})(?P<day>\d{2})(?P<extension>\.gz)*$'
+pattern_for_log_filename = r'nginx-access-ui.log-(?P<year>\d{4})(?P<month>\d{2})(?P<day>\d{2})(?P<extension>\.gz)*$'
 logging.basicConfig(format='[%(asctime)s] %(levelname).1s %(message)s',
                     datefmt='%Y.%m.%d%H:%M:%S',
                     level=logging.DEBUG,
