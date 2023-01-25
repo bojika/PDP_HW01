@@ -12,11 +12,11 @@ class MyTestCase_01(unittest.TestCase):
         self.config_02 = {'a': 2}
 
     def test_merge_config_01(self):
-        config = merge_config(self.config_01, self.config_02)
+        config = merge_config(internal_config=self.config_01, external_config=self.config_02)
         self.assertEqual(config, {'a': 2, 'b': 3})
 
     def test_merge_config_02(self):
-        config = merge_config(self.config_02, self.config_01)
+        config = merge_config(internal_config=self.config_02, external_config=self.config_01)
         self.assertEqual(config, {'a': 1, 'b': 3})
 
 
