@@ -118,15 +118,15 @@ def make_report(logs, rep_name, config, threshold=50):
 
 def merge_config(external_config, internal_config=config):
     def get_external_config(path):
-    try:
-        with open(path, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    except FileNotFoundError:
-        logging.info(f"The config file '{path}' not found")
-        sys.exit()
-    except json.decoder.JSONDecodeError:
-        logging.info(f"Cannot parse the config file '{path}'")
-        sys.exit()
+        try:
+            with open(path, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except FileNotFoundError:
+            logging.info(f"The config file '{path}' not found")
+            sys.exit()
+        except json.decoder.JSONDecodeError:
+            logging.info(f"Cannot parse the config file '{path}'")
+            sys.exit()
         
     res = internal_config.copy()
     if external_config is not None:
