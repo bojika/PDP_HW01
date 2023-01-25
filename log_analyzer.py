@@ -127,7 +127,7 @@ def merge_config(external_config, internal_config=config):
         except json.decoder.JSONDecodeError:
             logging.info(f"Cannot parse the config file '{path}'")
             sys.exit()
-        
+
     res = internal_config.copy()
     if external_config is not None:
         res.update(external_config)
